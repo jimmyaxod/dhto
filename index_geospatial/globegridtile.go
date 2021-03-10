@@ -1,4 +1,4 @@
-package grid
+package index_geospatial
 
 /**
  * globegridtile defines a tile in gps space.
@@ -10,7 +10,7 @@ import (
 	"fmt"
 )
 
-type globegridtile struct {
+type Globegridtile struct {
 	id      string
 	hash    string
 	min_lat float64
@@ -20,8 +20,8 @@ type globegridtile struct {
 }
 
 // NewGlobegridtile creates a new tile
-func NewGlobegridtile(id string, hash string, min_lat float64, max_lat float64, min_lon float64, max_lon float64) globegridtile {
-	return globegridtile{
+func NewGlobegridtile(id string, hash string, min_lat float64, max_lat float64, min_lon float64, max_lon float64) Globegridtile {
+	return Globegridtile{
 		id:      id,
 		hash:    hash,
 		min_lat: min_lat,
@@ -32,7 +32,7 @@ func NewGlobegridtile(id string, hash string, min_lat float64, max_lat float64, 
 }
 
 // ContainsCompletely returns true if the arg is in this tile.
-func (ggt globegridtile) ContainsCompletely(ggt2 globegridtile) bool {
+func (ggt Globegridtile) ContainsCompletely(ggt2 Globegridtile) bool {
 	if ggt2.min_lat < ggt.min_lat ||
 		ggt2.min_lat > ggt.max_lat ||
 		ggt2.max_lat < ggt.min_lat ||
@@ -47,23 +47,23 @@ func (ggt globegridtile) ContainsCompletely(ggt2 globegridtile) bool {
 }
 
 // Contains returns true if the point is in this tile
-func (ggt globegridtile) Contains(lat float64, lon float64) bool {
+func (ggt Globegridtile) Contains(lat float64, lon float64) bool {
 	return ggt.ContainsLat(lat) &&
 		ggt.ContainsLon(lon)
 }
 
 // ContainsLat returns true if lat is contained
-func (ggt globegridtile) ContainsLat(lat float64) bool {
+func (ggt Globegridtile) ContainsLat(lat float64) bool {
 	return (lat >= ggt.min_lat && lat < ggt.max_lat)
 }
 
 // ContainsLon returns true if lon is contained
-func (ggt globegridtile) ContainsLon(lon float64) bool {
+func (ggt Globegridtile) ContainsLon(lon float64) bool {
 	return (lon >= ggt.min_lon && lon < ggt.max_lon)
 }
 
 // ContainedInRange returns true if the tile is contained in a range
-func (ggt globegridtile) ContainedInRange(gp gridpoint, dist float64) bool {
+func (ggt Globegridtile) ContainedInRange(gp Gridpoint, dist float64) bool {
 	d1 := DistanceBetween(gp, NewGridpoint("tlc", ggt.min_lat, ggt.min_lon))
 	d2 := DistanceBetween(gp, NewGridpoint("trc", ggt.min_lat, ggt.max_lon))
 	d3 := DistanceBetween(gp, NewGridpoint("blc", ggt.max_lat, ggt.min_lon))
@@ -73,7 +73,7 @@ func (ggt globegridtile) ContainedInRange(gp gridpoint, dist float64) bool {
 }
 
 // ContainsRange returns true if the range is contained in a tile
-func (ggt globegridtile) ContainsRange(gp gridpoint, dist float64) bool {
+func (ggt Globegridtile) ContainsRange(gp Gridpoint, dist float64) bool {
 	top := gp.MoveTo(0, dist)
 	right := gp.MoveTo(90, dist)
 	bottom := gp.MoveTo(180, dist)
@@ -86,7 +86,7 @@ func (ggt globegridtile) ContainsRange(gp gridpoint, dist float64) bool {
 }
 
 // IntersectsRange returns true if the range intersects this tile
-func (ggt globegridtile) IntersectsRange(gp gridpoint, dist float64) bool {
+func (ggt Globegridtile) IntersectsRange(gp Gridpoint, dist float64) bool {
 	// First easy bit, if the gp is inside the ggt...
 	if ggt.Contains(gp.lat, gp.lon) {
 		return true
@@ -143,8 +143,12 @@ func (ggt globegridtile) IntersectsRange(gp gridpoint, dist float64) bool {
 	return false
 }
 
-func (ggt globegridtile) Area() float64 {
-	points := make([]gridpoint, 5)
+func (ggt Globegridtile) GetHash() string {
+	return ggt.hash
+}
+
+func (ggt Globegridtile) Area() float64 {
+	points := make([]Gridpoint, 5)
 	points[0] = NewGridpoint("tlc", ggt.min_lat, ggt.min_lon)
 	points[1] = NewGridpoint("trc", ggt.min_lat, ggt.max_lon)
 	points[2] = NewGridpoint("brc", ggt.max_lat, ggt.max_lon)
@@ -153,7 +157,7 @@ func (ggt globegridtile) Area() float64 {
 	return Area(points)
 }
 
-func (ggt globegridtile) String() string {
+func (ggt Globegridtile) String() string {
 	area := ggt.Area()
-	return fmt.Sprintf("globegridtile id=%s hash=%s (%.3f, %.3f) - (%.3f, %.3f) [area %.2f sqm]", ggt.id, ggt.hash, ggt.min_lat, ggt.min_lon, ggt.max_lat, ggt.max_lon, area)
+	return fmt.Sprintf("Globegridtile id=%s hash=%s (%.3f, %.3f) - (%.3f, %.3f) [area %.2f sqm]", ggt.id, ggt.hash, ggt.min_lat, ggt.min_lon, ggt.max_lat, ggt.max_lon, area)
 }

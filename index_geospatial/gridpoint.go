@@ -1,4 +1,4 @@
-package grid
+package index_geospatial
 
 /**
  * gridpoint is a unique GPS point
@@ -13,30 +13,30 @@ import (
 const GLOBE_RADIUS = 6371 * 1000
 
 var (
-	NP = gridpoint{id: "North Pole", lat: 90, lon: 0}
-	SP = gridpoint{id: "South Pole", lat: -90, lon: 0}
+	NP = Gridpoint{id: "North Pole", lat: 90, lon: 0}
+	SP = Gridpoint{id: "South Pole", lat: -90, lon: 0}
 )
 
-type gridpoint struct {
+type Gridpoint struct {
 	lat float64
 	lon float64
 	id  string
 }
 
-func NewGridpoint(id string, lat float64, lon float64) gridpoint {
-	return gridpoint{
+func NewGridpoint(id string, lat float64, lon float64) Gridpoint {
+	return Gridpoint{
 		lat: lat,
 		lon: lon,
 		id:  id,
 	}
 }
 
-func (gp gridpoint) String() string {
+func (gp Gridpoint) String() string {
 	return fmt.Sprintf("gridpoint id=%s (%.3f, %.3f)", gp.id, gp.lat, gp.lon)
 }
 
 // DistanceBetween measures distance between two gridpoints
-func DistanceBetween(aa gridpoint, bb gridpoint) float64 {
+func DistanceBetween(aa Gridpoint, bb Gridpoint) float64 {
 	latDistance := (bb.lat - aa.lat) * math.Pi / 180
 	lonDistance := (bb.lon - aa.lon) * math.Pi / 180
 
@@ -47,7 +47,7 @@ func DistanceBetween(aa gridpoint, bb gridpoint) float64 {
 }
 
 // BearingBetween calculates initial bearing between two gridpoints
-func BearingBetween(aa gridpoint, bb gridpoint) float64 {
+func BearingBetween(aa Gridpoint, bb Gridpoint) float64 {
 	aa_lat_r := aa.lat * math.Pi / 180
 	aa_lon_r := aa.lon * math.Pi / 180
 	bb_lat_r := bb.lat * math.Pi / 180
@@ -60,16 +60,16 @@ func BearingBetween(aa gridpoint, bb gridpoint) float64 {
 }
 
 // DistanceTo measures distance to somewhere else
-func (gp gridpoint) DistanceTo(dest gridpoint) float64 {
+func (gp Gridpoint) DistanceTo(dest Gridpoint) float64 {
 	return DistanceBetween(gp, dest)
 }
 
-func (gp gridpoint) BearingTo(dest gridpoint) float64 {
+func (gp Gridpoint) BearingTo(dest Gridpoint) float64 {
 	return BearingBetween(gp, dest)
 }
 
 // MoveTo moves in a given direction and returns a new gridpoint.
-func (gp gridpoint) MoveTo(bearing float64, distance float64) gridpoint {
+func (gp Gridpoint) MoveTo(bearing float64, distance float64) Gridpoint {
 	bearing_r := bearing * math.Pi / 180
 	lat_r := gp.lat * math.Pi / 180
 	lon_r := gp.lon * math.Pi / 180
@@ -85,7 +85,7 @@ func (gp gridpoint) MoveTo(bearing float64, distance float64) gridpoint {
 }
 
 // Area calculates the area of a set of points. The last point should be first.
-func Area(points []gridpoint) float64 {
+func Area(points []Gridpoint) float64 {
 	var area float64 = 0
 	num := len(points)
 	if num > 2 {

@@ -1,4 +1,4 @@
-package grid
+package index_geospatial
 
 import (
 	"encoding/hex"
@@ -7,7 +7,7 @@ import (
 	"math"
 )
 
-type globegrid struct {
+type Globegrid struct {
 	id      string
 	num_lat int
 	max_lon int
@@ -18,8 +18,8 @@ type globegrid struct {
 }
 
 // NewGlobegrid creates a new globegrid
-func NewGlobegrid(id string, lat int, lon int) globegrid {
-	gg := globegrid{
+func NewGlobegrid(id string, lat int, lon int) Globegrid {
+	gg := Globegrid{
 		id:      id,
 		num_lat: lat,
 		max_lon: lon,
@@ -29,18 +29,18 @@ func NewGlobegrid(id string, lat int, lon int) globegrid {
 }
 
 // String convert to usable string
-func (gg *globegrid) String() string {
+func (gg *Globegrid) String() string {
 	avg := float64(gg.GetAverageGridArea() / 1000000)
 	return fmt.Sprintf("[GG %s [%d * <%d] tiles=%d tile_area=%.2f sqkm", gg.id, gg.num_lat, gg.max_lon, gg.num_tiles, avg)
 }
 
 // GetAverageGridArea returns the average grid area based on the number of tiles.
-func (gg *globegrid) GetAverageGridArea() float64 {
+func (gg *Globegrid) GetAverageGridArea() float64 {
 	return 4 * math.Pi * GLOBE_RADIUS * GLOBE_RADIUS / float64(gg.num_tiles)
 }
 
 // CreateGrid creates the grid
-func (gg *globegrid) CreateGrid() {
+func (gg *Globegrid) CreateGrid() {
 	// Check if it's in the cache...
 	data, total, err := GetGridData(gg.num_lat, gg.max_lon)
 	if err == nil {
@@ -55,7 +55,7 @@ func (gg *globegrid) CreateGrid() {
 	delta_lat := 180.0 / float64(gg.num_lat)
 	delta_lon_eq := 360.0 / float64(gg.max_lon)
 
-	eq_points := make([]gridpoint, 5)
+	eq_points := make([]Gridpoint, 5)
 	eq_points[0] = NewGridpoint("eq_tlc", 0, 0)
 	eq_points[1] = NewGridpoint("eq_blc", delta_lat, 0)
 	eq_points[2] = NewGridpoint("eq_brc", delta_lat, delta_lon_eq)
@@ -75,7 +75,7 @@ func (gg *globegrid) CreateGrid() {
 		for n_grids = gg.max_lon; n_grids > 1; n_grids-- {
 			delta_lon := 360.0 / float64(n_grids)
 
-			points := make([]gridpoint, 5)
+			points := make([]Gridpoint, 5)
 			points[0] = NewGridpoint("tlc", lat, 0)
 			points[1] = NewGridpoint("blc", lat+delta_lat, 0)
 			points[2] = NewGridpoint("brc", lat+delta_lat, delta_lon)
@@ -101,7 +101,7 @@ func (gg *globegrid) CreateGrid() {
 }
 
 // Find finds the given point in this grid
-func (gg *globegrid) Find(p gridpoint) (globegridtile, error) {
+func (gg *Globegrid) Find(p Gridpoint) (Globegridtile, error) {
 	delta_lat := 180.0 / float64(gg.num_lat)
 	lat_i := 0
 
@@ -123,11 +123,11 @@ func (gg *globegrid) Find(p gridpoint) (globegridtile, error) {
 		}
 		lat_i++
 	}
-	return globegridtile{}, errors.New("Not found")
+	return Globegridtile{}, errors.New("Not found")
 }
 
 // MapToID converts a map position to a hash
-func (gg *globegrid) MapToID(lat int, lon int) string {
+func (gg *Globegrid) MapToID(lat int, lon int) string {
 	lat_norm := float64(lat) / float64(gg.num_lat)
 	lon_norm := float64(lon) / float64(gg.num_lon[lat])
 
@@ -179,8 +179,8 @@ func inRange(tile_min float64, tile_max float64, val_min float64, val_max float6
 	return true
 }
 
-func (gg *globegrid) FindRange(p gridpoint, distance float64, range_inside_tile bool, tile_inside_range bool) ([]globegridtile, error) {
-	results := make([]globegridtile, 0)
+func (gg *Globegrid) FindRange(p Gridpoint, distance float64, range_inside_tile bool, tile_inside_range bool) ([]Globegridtile, error) {
+	results := make([]Globegridtile, 0)
 
 	p_top := p.MoveTo(180, distance)
 	p_bottom := p.MoveTo(0, distance)

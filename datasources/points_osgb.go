@@ -1,4 +1,4 @@
-package grid
+package datasources
 
 import (
 	"bufio"
@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/fofanov/go-osgb"
+	"gtihub.com/jimmyaxod/dhto/index_geospatial"
 )
 
 /**
@@ -17,7 +18,7 @@ import (
  * hydrography | landcover | landform | other | populatedPlace | transportNetwork
  */
 
-func GetOSNames(datatype string) ([]gridpoint, error) {
+func GetOSNames(datatype string) ([]index_geospatial.Gridpoint, error) {
 	trans, err := osgb.NewOSTN15Transformer()
 	if err != nil {
 		return nil, err
@@ -29,7 +30,7 @@ func GetOSNames(datatype string) ([]gridpoint, error) {
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
-	var data []gridpoint
+	var data []index_geospatial.Gridpoint
 
 	// Read the datalines and create gridpoints
 	for scanner.Scan() {
@@ -93,7 +94,7 @@ func GetOSNames(datatype string) ([]gridpoint, error) {
 				nationalGridCoord := osgb.NewOSGB36Coord(eastling, northing, height)
 				gpsCoord, err := trans.FromNationalGrid(nationalGridCoord)
 				if err == nil {
-					gp := NewGridpoint(gpid, gpsCoord.Lat, gpsCoord.Lon)
+					gp := index_geospatial.NewGridpoint(gpid, gpsCoord.Lat, gpsCoord.Lon)
 					data = append(data, gp)
 				}
 			}

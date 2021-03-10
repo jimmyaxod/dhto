@@ -1,4 +1,4 @@
-package grid
+package index_geospatial
 
 /**
  * Some tests for globegridtree

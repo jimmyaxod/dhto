@@ -1,4 +1,4 @@
-module grid
+module gtihub.com/jimmyaxod/dhto
 
 go 1.15
 

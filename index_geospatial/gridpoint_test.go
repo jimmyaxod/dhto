@@ -1,4 +1,4 @@
-package grid
+package index_geospatial
 
 /**
  * Some tests for gridpoint
@@ -37,7 +37,7 @@ func TestGridpoint(t *testing.T) {
 }
 
 func TestGridpoint_area(t *testing.T) {
-	points := make([]gridpoint, 5)
+	points := make([]Gridpoint, 5)
 	points[0] = myhouse
 	points[1] = myhouse.MoveTo(90, 1000)
 	points[2] = myhouse.MoveTo(90, 1000).MoveTo(180, 1000)

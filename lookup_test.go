@@ -1,19 +1,27 @@
-package grid
+package main
 
 import (
 	"fmt"
 	"testing"
 	"time"
+
+	"gtihub.com/jimmyaxod/dhto/datasources"
+	"gtihub.com/jimmyaxod/dhto/dht"
+	"gtihub.com/jimmyaxod/dhto/index_geospatial"
+)
+
+var (
+	myhouse = index_geospatial.NewGridpoint("My house", 52.179413, 0.919274)
 )
 
 // register a list of gridpoints on a dht using a globegridtree
-func registerPointsOnDHT(data []gridpoint, ggt *globegridtree, dht *dhtsimple) {
+func registerPointsOnDHT(data []index_geospatial.Gridpoint, ggt *index_geospatial.Globegridtree, dht *dht.DHTsimple) {
 	// Register all the data on the dht using the gridtree
 	for i, item := range data {
 		itemID := fmt.Sprintf("transportNetwork %d", i)
 		// Do a lookup to see what we need to register the point against
 		for _, tile := range ggt.Find(item) {
-			dht.Put(tile.hash, itemID)
+			dht.Put(tile.GetHash(), itemID)
 		}
 		if i%10000 == 0 {
 			fmt.Printf("Loading data %d %v\n", i, dht)
@@ -45,13 +53,13 @@ func registerPointsOnDHT(data []gridpoint, ggt *globegridtree, dht *dhtsimple) {
 // TestLookup do some fun lookups and check everything works
 func TestLookup(t *testing.T) {
 
-	dht := NewDHTSimple()
+	dht := dht.NewDHTSimple()
 
 	// Lets create a gridtree so we can figure out where things are on a few different grids
-	ggt := NewGlobegridtree(1, 65536, 131072)
+	ggt := index_geospatial.NewGlobegridtree(1, 65536, 131072)
 
 	// Load up some OS data to play with
-	data, err := GetOSNames("transportNetwork")
+	data, err := datasources.GetOSNames("transportNetwork")
 
 	if err != nil {
 		t.Errorf("Can't load %v\n", err)
@@ -74,13 +82,13 @@ func TestLookup(t *testing.T) {
 	dht_lookups := 0
 	queryCtime := time.Now()
 
-	area_query := AreaRange(distance)
+	area_query := index_geospatial.AreaRange(distance)
 	area_lookup := 0.0
 
 	for _, tile := range tiles {
 		area_lookup += tile.Area()
 		fmt.Printf("Doing DHT lookup for %v\n", tile)
-		items := dht.Get(tile.hash)
+		items := dht.Get(tile.GetHash())
 		dht_lookups++
 		for _, item := range items {
 			// Now lookup to find the specific data, and double check...

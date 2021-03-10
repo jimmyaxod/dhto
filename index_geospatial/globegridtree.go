@@ -1,15 +1,15 @@
-package grid
+package index_geospatial
 
 import "fmt"
 
-type globegridtree struct {
-	grids []globegrid
+type Globegridtree struct {
+	grids []Globegrid
 }
 
-func NewGlobegridtree(n int, num_lat int, num_lon int) *globegridtree {
+func NewGlobegridtree(n int, num_lat int, num_lon int) *Globegridtree {
 
-	g := &globegridtree{}
-	g.grids = make([]globegrid, n)
+	g := &Globegridtree{}
+	g.grids = make([]Globegrid, n)
 
 	for i := 0; i < n; i++ {
 		id := fmt.Sprintf("R%d", i)
@@ -21,7 +21,7 @@ func NewGlobegridtree(n int, num_lat int, num_lon int) *globegridtree {
 	return g
 }
 
-func (g *globegridtree) String() string {
+func (g *Globegridtree) String() string {
 	s := ""
 	for _, grid := range g.grids {
 		s = fmt.Sprintf("%s\n%s", grid.String(), s)
@@ -30,13 +30,13 @@ func (g *globegridtree) String() string {
 }
 
 // GetGrid gets a specific grid
-func (g *globegridtree) GetGrid(n int) globegrid {
+func (g *Globegridtree) GetGrid(n int) Globegrid {
 	return g.grids[n]
 }
 
 // Find finds matches for a specific gridpoint
-func (g *globegridtree) Find(p gridpoint) []globegridtile {
-	results := make([]globegridtile, 0)
+func (g *Globegridtree) Find(p Gridpoint) []Globegridtile {
+	results := make([]Globegridtile, 0)
 
 	for i := 0; i < len(g.grids); i++ {
 		ggt, err := g.grids[i].Find(p)
@@ -48,8 +48,8 @@ func (g *globegridtree) Find(p gridpoint) []globegridtile {
 }
 
 // FindRange finds matches for a specific gridpoint with a range
-func (g *globegridtree) FindRange(p gridpoint, distance float64) []globegridtile {
-	results := make([]globegridtile, 0)
+func (g *Globegridtree) FindRange(p Gridpoint, distance float64) []Globegridtile {
+	results := make([]Globegridtile, 0)
 
 	for i := 0; i < len(g.grids); i++ {
 		ggts, err := g.grids[i].FindRange(p, distance, false, false)

@@ -1,4 +1,4 @@
-package grid
+package index_geospatial
 
 import (
 	"bufio"
@@ -15,7 +15,7 @@ import (
 
 // GetGridData reads from the cache...
 func GetGridData(y int, x int) ([]int, int, error) {
-	file, err := os.Open(fmt.Sprintf("gridcache/grid_%d_%d.data", y, x))
+	file, err := os.Open(fmt.Sprintf("./gridcache/grid_%d_%d.data", y, x))
 	if err != nil {
 		return nil, 0, err
 	}
@@ -39,7 +39,7 @@ func GetGridData(y int, x int) ([]int, int, error) {
 
 // PutGridData writes to the cache...
 func PutGridData(y int, x int, data []int) error {
-	file, err := os.Create(fmt.Sprintf("gridcache/grid_%d_%d.data", y, x))
+	file, err := os.Create(fmt.Sprintf("./gridcache/grid_%d_%d.data", y, x))
 	if err != nil {
 		return err
 	}
