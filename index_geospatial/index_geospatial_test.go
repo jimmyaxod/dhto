@@ -15,9 +15,9 @@ func TestCanIndexAndLookup(t *testing.T) {
 
 	dht := dht.NewDHTSimple()
 	opts := index_geospatial.IndexGeospatialOptions{
-		Num_grids:      12,
-		First_grid_lat: 2,
-		First_grid_lon: 4,
+		Num_grids:      6,
+		First_grid_lat: 1024,
+		First_grid_lon: 2048,
 	}
 	igeo := index_geospatial.NewIndexGeospatial(dht, opts)
 
@@ -41,6 +41,8 @@ func TestCanIndexAndLookup(t *testing.T) {
 		dist := gp.DistanceTo(me)
 		fmt.Printf("Result %.3f - %v\n", dist, gp)
 	}
+
+	fmt.Printf("Index %v\n", igeo)
 
 	assert.True(t, false)
 }

@@ -34,6 +34,14 @@ func NewIndexGeospatial(dht dht.DHT, opts IndexGeospatialOptions) *IndexGeospati
 	}
 }
 
+// String
+func (index *IndexGeospatial) String() string {
+	return fmt.Sprintf("== IndexGeospatial ==\n"+
+		"DHT = %v\n"+
+		"GGT = %v\n"+
+		"IndexedData size = %d\n", index.dht, index.ggt, len(index.indexedData))
+}
+
 // Index indexes a number of gridpoints
 func (index *IndexGeospatial) Index(data []Gridpoint) {
 	for _, item := range data {
