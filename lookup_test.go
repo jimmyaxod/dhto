@@ -53,6 +53,8 @@ func registerPointsOnDHT(data []index_geospatial.Gridpoint, ggt *index_geospatia
 // TestLookup do some fun lookups and check everything works
 func TestLookup(t *testing.T) {
 
+	index_geospatial.CacheDIR = "./gridcache"
+
 	dht := dht.NewDHTSimple()
 
 	// Lets create a gridtree so we can figure out where things are on a few different grids
@@ -123,16 +125,3 @@ func TestLookup(t *testing.T) {
 
 	fmt.Printf("\n")
 }
-
-/*
-Some grid results
-
-grids	lat		lon		results		valid	lookups	d_keys	d_items	area_query	area_lookup	perc	t_reg	t_find	t_lookup
-1		1024	2048	1148		12		1		797		934843	3141583		382129365	12164	4s		54us	2.56ms
-1		2048	4096	433			12		1		2579	934843	3141593		95561257	3042	8s		47us	967us
-1		4096	8192	418			12		3		8155	934843	3141593		71657812	2281	12s		63us	936us
-1		8192	16384	50			12		3		24883	934843	3141593		17909246	570		24s		131us	231us
-1		16384	32768	27			12		6		66996	934843	3141583		8954623		285		46s		224us	300us
-
-
-*/

@@ -44,7 +44,6 @@ func (gg *Globegrid) CreateGrid() {
 	// Check if it's in the cache...
 	data, total, err := GetGridData(gg.num_lat, gg.max_lon)
 	if err == nil {
-		fmt.Printf("CreateGrid from cache %d %d\n", gg.num_lat, gg.max_lon)
 		gg.num_lon = data
 		gg.num_tiles = total
 		return
@@ -106,7 +105,7 @@ func (gg *Globegrid) Find(p Gridpoint) (Globegridtile, error) {
 	lat_i := 0
 
 	// NB This is suboptimal
-	// TODO: Improve this to speed up...
+	// TODO: Improve this to speed up if needed...
 	for lat := -90.0; lat < 90; lat += delta_lat {
 		if p.lat >= lat && p.lat < (lat+delta_lat) {
 			// Ok we're on the right lat tile
@@ -204,12 +203,10 @@ func (gg *Globegrid) FindRange(p Gridpoint, distance float64, range_inside_tile 
 	lon_right := p_right.lon
 	// Possible that we need to check 2 ranges here, if we are at the crossover point.
 
-	fmt.Printf("FindRange\n left=%v\n right=%v\n lat_left=%v\n lat_right=%v\n\n", p_left, p_right, lon_left, lon_right)
-
 	check_all_lon := false
 
-	// If we wrapped around, fallback for now.
-	// TODO: Check 2 ranges
+	// If we wrapped around, fallback for now to checking all
+	// TODO: Check 2 ranges quickly
 	if lon_left > lon_right {
 		check_all_lon = true
 	}

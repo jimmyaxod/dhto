@@ -47,7 +47,12 @@ func (ggt Globegridtile) ContainsCompletely(ggt2 Globegridtile) bool {
 }
 
 // Contains returns true if the point is in this tile
-func (ggt Globegridtile) Contains(lat float64, lon float64) bool {
+func (ggt Globegridtile) Contains(gp Gridpoint) bool {
+	return ggt.ContainsLatLon(gp.lat, gp.lon)
+}
+
+// Contains returns true if the point is in this tile
+func (ggt Globegridtile) ContainsLatLon(lat float64, lon float64) bool {
 	return ggt.ContainsLat(lat) &&
 		ggt.ContainsLon(lon)
 }
@@ -79,16 +84,16 @@ func (ggt Globegridtile) ContainsRange(gp Gridpoint, dist float64) bool {
 	bottom := gp.MoveTo(180, dist)
 	left := gp.MoveTo(270, dist)
 
-	return ggt.Contains(top.lat, top.lon) &&
-		ggt.Contains(right.lat, right.lon) &&
-		ggt.Contains(bottom.lat, bottom.lon) &&
-		ggt.Contains(left.lat, left.lon)
+	return ggt.ContainsLatLon(top.lat, top.lon) &&
+		ggt.ContainsLatLon(right.lat, right.lon) &&
+		ggt.ContainsLatLon(bottom.lat, bottom.lon) &&
+		ggt.ContainsLatLon(left.lat, left.lon)
 }
 
 // IntersectsRange returns true if the range intersects this tile
 func (ggt Globegridtile) IntersectsRange(gp Gridpoint, dist float64) bool {
 	// First easy bit, if the gp is inside the ggt...
-	if ggt.Contains(gp.lat, gp.lon) {
+	if ggt.ContainsLatLon(gp.lat, gp.lon) {
 		return true
 	}
 

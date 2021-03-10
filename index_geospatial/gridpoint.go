@@ -32,7 +32,7 @@ func NewGridpoint(id string, lat float64, lon float64) Gridpoint {
 }
 
 func (gp Gridpoint) String() string {
-	return fmt.Sprintf("gridpoint id=%s (%.3f, %.3f)", gp.id, gp.lat, gp.lon)
+	return fmt.Sprintf("Gridpoint id=%s (%.3f, %.3f)", gp.id, gp.lat, gp.lon)
 }
 
 // DistanceBetween measures distance between two gridpoints
@@ -40,10 +40,17 @@ func DistanceBetween(aa Gridpoint, bb Gridpoint) float64 {
 	latDistance := (bb.lat - aa.lat) * math.Pi / 180
 	lonDistance := (bb.lon - aa.lon) * math.Pi / 180
 
-	a := math.Sin(latDistance/2)*math.Sin(latDistance/2) + math.Cos(aa.lat*math.Pi/180)*math.Cos(bb.lat*math.Pi/180)*math.Sin(lonDistance/2)*math.Sin(lonDistance/2)
+	a := math.Sin(latDistance/2)*math.Sin(latDistance/2) +
+		math.Cos(aa.lat*math.Pi/180)*math.Cos(bb.lat*math.Pi/180)*
+			math.Sin(lonDistance/2)*math.Sin(lonDistance/2)
 
 	c := GLOBE_RADIUS * 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 	return c
+}
+
+// DistanceTo measures distance to somewhere else
+func (gp Gridpoint) DistanceTo(dest Gridpoint) float64 {
+	return DistanceBetween(gp, dest)
 }
 
 // BearingBetween calculates initial bearing between two gridpoints
@@ -53,30 +60,30 @@ func BearingBetween(aa Gridpoint, bb Gridpoint) float64 {
 	bb_lat_r := bb.lat * math.Pi / 180
 	bb_lon_r := bb.lon * math.Pi / 180
 	y := math.Sin(bb_lon_r-aa_lon_r) * math.Cos(bb_lat_r)
-	x := math.Cos(aa_lat_r)*math.Sin(bb_lat_r) - math.Sin(aa_lat_r)*math.Cos(bb_lat_r)*math.Cos(bb_lon_r-aa_lon_r)
+	x := math.Cos(aa_lat_r)*math.Sin(bb_lat_r) -
+		math.Sin(aa_lat_r)*math.Cos(bb_lat_r)*math.Cos(bb_lon_r-aa_lon_r)
 
 	b := math.Atan2(y, x)
 	return math.Mod((b*180/math.Pi)+360, 360)
 }
 
-// DistanceTo measures distance to somewhere else
-func (gp Gridpoint) DistanceTo(dest Gridpoint) float64 {
-	return DistanceBetween(gp, dest)
-}
-
+// BearingTo calculates initial bearing between two gridpoints
 func (gp Gridpoint) BearingTo(dest Gridpoint) float64 {
 	return BearingBetween(gp, dest)
 }
 
-// MoveTo moves in a given direction and returns a new gridpoint.
+// MoveTo moves in a given direction and returns a new Gridpoint.
 func (gp Gridpoint) MoveTo(bearing float64, distance float64) Gridpoint {
 	bearing_r := bearing * math.Pi / 180
 	lat_r := gp.lat * math.Pi / 180
 	lon_r := gp.lon * math.Pi / 180
 
-	end_lat_r := math.Asin(math.Sin(lat_r)*math.Cos(distance/GLOBE_RADIUS) + math.Cos(lat_r)*math.Sin(distance/GLOBE_RADIUS)*math.Cos(bearing_r))
+	end_lat_r := math.Asin(math.Sin(lat_r)*math.Cos(distance/GLOBE_RADIUS) +
+		math.Cos(lat_r)*math.Sin(distance/GLOBE_RADIUS)*math.Cos(bearing_r))
 
-	end_lon_r := lon_r + math.Atan2(math.Sin(bearing_r)*math.Sin(distance/GLOBE_RADIUS)*math.Cos(lat_r), math.Cos(distance/GLOBE_RADIUS)-math.Sin(lat_r)*math.Sin(end_lat_r))
+	end_lon_r := lon_r + math.Atan2(math.Sin(bearing_r)*
+		math.Sin(distance/GLOBE_RADIUS)*math.Cos(lat_r),
+		math.Cos(distance/GLOBE_RADIUS)-math.Sin(lat_r)*math.Sin(end_lat_r))
 
 	nlat := end_lat_r * 180 / math.Pi
 	nlon := math.Mod((end_lon_r*180/math.Pi)+540, 360) - 180
@@ -84,7 +91,7 @@ func (gp Gridpoint) MoveTo(bearing float64, distance float64) Gridpoint {
 	return NewGridpoint(gp.id, nlat, nlon)
 }
 
-// Area calculates the area of a set of points. The last point should be first.
+// Area calculates the area of a set of points. The last point should be a duplicate of the first.
 func Area(points []Gridpoint) float64 {
 	var area float64 = 0
 	num := len(points)
@@ -93,7 +100,8 @@ func Area(points []Gridpoint) float64 {
 			p1 := points[i]
 			p2 := points[i+1]
 
-			area += ((p2.lon - p1.lon) * math.Pi / 180) * (2 + math.Sin(p1.lat*math.Pi/180) + math.Sin(p2.lat*math.Pi/180))
+			area += ((p2.lon - p1.lon) * math.Pi / 180) *
+				(2 + math.Sin(p1.lat*math.Pi/180) + math.Sin(p2.lat*math.Pi/180))
 		}
 		area = area * GLOBE_RADIUS * GLOBE_RADIUS / 2
 	}
