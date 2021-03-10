@@ -15,7 +15,7 @@ var (
 )
 
 // register a list of gridpoints on a dht using a globegridtree
-func registerPointsOnDHT(data []index_geospatial.Gridpoint, ggt *index_geospatial.Globegridtree, dht *dht.DHTsimple) {
+func registerPointsOnDHT(data []index_geospatial.Gridpoint, ggt *index_geospatial.Globegridtree, dht dht.DHT) {
 	// Register all the data on the dht using the gridtree
 	for i, item := range data {
 		itemID := fmt.Sprintf("transportNetwork %d", i)
