@@ -1,6 +1,9 @@
 package index_geospatial
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type Globegridtree struct {
 	grids []Globegrid
@@ -60,5 +63,40 @@ func (g *Globegridtree) FindRange(p Gridpoint, distance float64) []Globegridtile
 			}
 		}
 	}
+	return results
+}
+
+// FindRangeBestGrid finds matches for a specific gridpoint with a range using the single best grid
+func (g *Globegridtree) FindRangeBestGrid(p Gridpoint, distance float64) []Globegridtile {
+	results := make([]Globegridtile, 0)
+
+	if distance == 0 {
+		return results
+	}
+
+	// Get the query area
+	queryArea := AreaRange(distance)
+
+	bestGrid := g.grids[0]
+	bestVal := 0.0
+
+	// Find the best one, then use it...
+	for _, grid := range g.grids {
+		tileAvgArea := grid.GetAverageGridArea()
+		val := math.Abs(queryArea-tileAvgArea) / math.Max(queryArea, tileAvgArea)
+		if bestVal == 0 || val < bestVal {
+			bestVal = val
+			bestGrid = grid
+		}
+	}
+
+	ggts, err := bestGrid.FindRange(p, distance, false, false)
+	if err == nil {
+		// Add them all
+		for _, ggt := range ggts {
+			results = append(results, ggt)
+		}
+	}
+
 	return results
 }
