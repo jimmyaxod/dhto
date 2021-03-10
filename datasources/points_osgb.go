@@ -11,6 +11,10 @@ import (
 	"gtihub.com/jimmyaxod/dhto/index_geospatial"
 )
 
+var (
+	OSGB_DATA_DIR = "data/OSGB"
+)
+
 /**
  * This handles OSGB datasets
  * Data should be in /data/OSGB/
@@ -24,7 +28,7 @@ func GetOSNames(datatype string) ([]index_geospatial.Gridpoint, error) {
 		return nil, err
 	}
 
-	file, err := os.Open(fmt.Sprintf("data/OSGB/%s.csv", datatype))
+	file, err := os.Open(fmt.Sprintf("%s/%s.csv", OSGB_DATA_DIR, datatype))
 	if err != nil {
 		return nil, err
 	}

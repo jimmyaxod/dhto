@@ -31,11 +31,15 @@ func TestGlobegridtree(t *testing.T) {
 func TestGlobegridtreeFindRange(t *testing.T) {
 	me := NewGridpoint("My house", 52.179413, 0.919274)
 
-	ggt := NewGlobegridtree(4, 4, 2)
+	ggt := NewGlobegridtree(12, 2, 4)
 
 	tiles := ggt.FindRange(me, 50000)
 
 	fmt.Printf("FindRange %v got %v results\n", myhouse, len(tiles))
+
+	tilesBest := ggt.FindRangeBestGrid(me, 50000)
+
+	fmt.Printf("FindRangeBestGrid %v got %v results\n", myhouse, len(tilesBest))
 
 	//	for i := 0; i < len(tiles); i++ {
 	//		fmt.Printf("Result: %v\n", tiles[i])
