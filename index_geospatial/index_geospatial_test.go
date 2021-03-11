@@ -12,6 +12,7 @@ import (
 
 func TestCanIndexAndLookup(t *testing.T) {
 	datasources.OSGB_DATA_DIR = "../data/OSGB"
+	datasources.FOOD_DATA = "../data/ukFoodRatings/all_food_by_geo.csv"
 
 	dht := dht.NewDHTSimple()
 	opts := index_geospatial.IndexGeospatialOptions{
@@ -22,7 +23,10 @@ func TestCanIndexAndLookup(t *testing.T) {
 	igeo := index_geospatial.NewIndexGeospatial(dht, opts)
 
 	// Load up some OS data to play with
-	data, err := datasources.GetOSNames("transportNetwork")
+	//data, err := datasources.GetOSNames("transportNetwork")
+
+	// Load up some food ratings to play with
+	data, err := datasources.GetFoodRatings()
 
 	if err != nil {
 		t.Errorf("Can't load %v\n", err)
@@ -33,7 +37,7 @@ func TestCanIndexAndLookup(t *testing.T) {
 
 	// Now do a query for some...
 	me := index_geospatial.NewGridpoint("My house", 52.179413, 0.919274)
-	results := igeo.Query(me, 1000.0)
+	results := igeo.Query(me, 10000.0)
 
 	fmt.Printf("Got %d results\n", len(results))
 
