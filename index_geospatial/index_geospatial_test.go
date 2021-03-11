@@ -37,7 +37,8 @@ func TestCanIndexAndLookup(t *testing.T) {
 
 	// Now do a query for some...
 	me := index_geospatial.NewGridpoint("My house", 52.179413, 0.919274)
-	results := igeo.Query(me, 10000.0)
+	distance := 10000.0
+	results, tiles := igeo.Query(me, distance)
 
 	fmt.Printf("Got %d results\n", len(results))
 
@@ -47,6 +48,21 @@ func TestCanIndexAndLookup(t *testing.T) {
 	}
 
 	fmt.Printf("Index %v\n", igeo)
+
+	markers := make([]index_geospatial.Gridpoint, 0)
+	markers = append(markers, me) // First one is me
+
+	for _, gp := range results {
+		markers = append(markers, gp)
+	}
+
+	gmapdata := index_geospatial.Gmapdata{
+		Center:   me,
+		Distance: distance,
+		Markers:  markers,
+		Tiles:    tiles,
+	}
+	index_geospatial.GmapWrite("../gmap/test_output.js", gmapdata)
 
 	assert.True(t, false)
 }

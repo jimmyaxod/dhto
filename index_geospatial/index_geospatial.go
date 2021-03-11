@@ -63,7 +63,7 @@ func (index *IndexGeospatial) IndexItem(item Gridpoint) {
 }
 
 // Query finds any gridpoints within an area
-func (index *IndexGeospatial) Query(gp Gridpoint, distance float64) []Gridpoint {
+func (index *IndexGeospatial) Query(gp Gridpoint, distance float64) ([]Gridpoint, []Globegridtile) {
 	results := make([]Gridpoint, 0)
 
 	// First we find the relevant tiles
@@ -84,5 +84,5 @@ func (index *IndexGeospatial) Query(gp Gridpoint, distance float64) []Gridpoint 
 		}
 	}
 
-	return results
+	return results, tiles
 }
