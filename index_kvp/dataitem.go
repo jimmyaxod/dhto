@@ -29,3 +29,13 @@ func (di *RealDataitem) GetKVPs() []DataKVP {
 func (di *RealDataitem) AddKVP(kvp DataKVP) {
 	di.kvps = append(di.kvps, kvp)
 }
+
+// String shows as string
+func (di *RealDataitem) String() string {
+	s := "Dataitem {"
+	for _, kvp := range di.kvps {
+		s = s + kvp.String() + " "
+	}
+	s = s + "}"
+	return s
+}

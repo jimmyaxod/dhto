@@ -19,5 +19,5 @@ func NewDataKVP(key string, value string) *DataKVP {
 
 // String converts it to a string
 func (kvp *DataKVP) String() string {
-	return fmt.Sprintf("KVP Key=%s Val=%s", kvp.Key, kvp.Value)
+	return fmt.Sprintf("(KVP Key=%s Val=%s)", kvp.Key, kvp.Value)
 }

@@ -3,6 +3,7 @@ package index_kvp
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"gtihub.com/jimmyaxod/dhto/dht"
 )
 
@@ -20,7 +21,8 @@ type IndexKVP struct {
 
 func NewIndexKVP(dht dht.DHT) *IndexKVP {
 	return &IndexKVP{
-		dht: dht,
+		dht:         dht,
+		indexedData: make(map[string]Dataitem),
 	}
 }
 
@@ -33,13 +35,31 @@ func (index *IndexKVP) Index(items []Dataitem) {
 
 // Index a single Dataitem
 func (index *IndexKVP) IndexItem(item Dataitem) {
-	// TODO: Index a kvp on the dht...
+	uuid := uuid.New()
+	index.indexedData[uuid.String()] = item
+
+	kvps := item.GetKVPs()
+	for _, kvp := range kvps {
+		hash := kvp.String() // TODO: Fix this...
+		index.dht.Put(hash, uuid.String())
+	}
 }
 
 // Lookup by kvp
 func (index *IndexKVP) Lookup(kvp DataKVP) []Dataitem {
-	// TODO: Lookup the kvp on the dht...
-	return nil
+	// Lookup the kvp on the dht...
+	hash := kvp.String()
+	itemIDs := index.dht.Get(hash)
+	results := make([]Dataitem, 0)
+
+	for _, id := range itemIDs {
+		// lookup the dataitem
+		res, ok := index.indexedData[id]
+		if ok {
+			results = append(results, res)
+		}
+	}
+	return results
 }
 
 func (index *IndexKVP) String() string {
