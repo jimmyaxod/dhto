@@ -19,13 +19,13 @@ type IndexGeospatialOptions struct {
 }
 
 type IndexGeospatial struct {
-	dht         dht.DHT
+	dht         *dht.DHT
 	ggt         *Globegridtree
 	opts        IndexGeospatialOptions
 	indexedData map[string]Gridpoint
 }
 
-func NewIndexGeospatial(dht dht.DHT, opts IndexGeospatialOptions) *IndexGeospatial {
+func NewIndexGeospatial(dht *dht.DHT, opts IndexGeospatialOptions) *IndexGeospatial {
 	return &IndexGeospatial{
 		dht:         dht,
 		ggt:         NewGlobegridtree(opts.Num_grids, opts.First_grid_lat, opts.First_grid_lon),
