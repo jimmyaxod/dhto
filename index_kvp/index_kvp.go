@@ -33,12 +33,12 @@ func (index *IndexKVP) Index(items []Dataitem) {
 
 // Index a single Dataitem
 func (index *IndexKVP) IndexItem(item Dataitem) {
-	// TODO: Index some kvp items
+	// TODO: Index a kvp on the dht...
 }
 
 // Lookup by kvp
 func (index *IndexKVP) Lookup(kvp DataKVP) []Dataitem {
-	// TODO
+	// TODO: Lookup the kvp on the dht...
 	return nil
 }
 

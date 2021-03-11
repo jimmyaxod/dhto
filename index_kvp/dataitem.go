@@ -8,3 +8,24 @@ package index_kvp
 type Dataitem interface {
 	GetKVPs() []DataKVP
 }
+
+type RealDataitem struct {
+	kvps []DataKVP
+}
+
+// NewDataitem creates a new dataitem
+func NewDataitem() *RealDataitem {
+	return &RealDataitem{
+		kvps: make([]DataKVP, 0),
+	}
+}
+
+// GetKVPs gets current kvps
+func (di *RealDataitem) GetKVPs() []DataKVP {
+	return di.kvps
+}
+
+// AddKVP add KVP to this item
+func (di *RealDataitem) AddKVP(kvp DataKVP) {
+	di.kvps = append(di.kvps, kvp)
+}
