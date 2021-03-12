@@ -12,10 +12,21 @@ import (
  *
  */
 
+// There lots of different lookup strategies.
+type IndexGeospatialLookupStrategy int
+
+const (
+	Lookup_strat_tiles_closest_range IndexGeospatialLookupStrategy = iota
+	Lookup_strat_smallest_area
+	Lookup_strat_least_tiles_smallest_area
+)
+
 type IndexGeospatialOptions struct {
-	Num_grids      int
-	First_grid_lat int
-	First_grid_lon int
+	Num_grids       int
+	First_grid_lat  int
+	First_grid_lon  int
+	Grid_multiplier float64
+	Lookup_strategy IndexGeospatialLookupStrategy
 }
 
 type IndexGeospatial struct {
@@ -28,7 +39,7 @@ type IndexGeospatial struct {
 func NewIndexGeospatial(dht dht.DHT, opts IndexGeospatialOptions) *IndexGeospatial {
 	return &IndexGeospatial{
 		dht:         dht,
-		ggt:         NewGlobegridtree(opts.Num_grids, opts.First_grid_lat, opts.First_grid_lon),
+		ggt:         NewGlobegridtree(opts.Num_grids, opts.First_grid_lat, opts.First_grid_lon, opts.Grid_multiplier),
 		opts:        opts,
 		indexedData: make(map[string]Gridpoint),
 	}
@@ -66,8 +77,15 @@ func (index *IndexGeospatial) IndexItem(item Gridpoint) {
 func (index *IndexGeospatial) Query(gp Gridpoint, distance float64) ([]Gridpoint, []Globegridtile) {
 	results := make([]Gridpoint, 0)
 
+	var tiles []Globegridtile
 	// First we find the relevant tiles
-	tiles := index.ggt.FindRangeBestGrid(gp, distance)
+	if index.opts.Lookup_strategy == Lookup_strat_least_tiles_smallest_area {
+		tiles = index.ggt.FindRangeLeastTilesSmallestArea(gp, distance)
+	} else if index.opts.Lookup_strategy == Lookup_strat_smallest_area {
+		tiles = index.ggt.FindRangeSmallestArea(gp, distance)
+	} else {
+		tiles = index.ggt.FindRangeBestGrid(gp, distance)
+	}
 
 	// Now do the dht lookups, and add if in range
 	for _, tile := range tiles {

@@ -16,7 +16,7 @@ import (
 func TestGlobegridtree(t *testing.T) {
 	me := NewGridpoint("My house", 52.179413, 0.919274)
 
-	ggt := NewGlobegridtree(4, 4, 2)
+	ggt := NewGlobegridtree(4, 4, 2, 2.0)
 
 	tiles := ggt.Find(me)
 
@@ -31,7 +31,7 @@ func TestGlobegridtree(t *testing.T) {
 func TestGlobegridtreeFindRange(t *testing.T) {
 	me := NewGridpoint("My house", 52.179413, 0.919274)
 
-	ggt := NewGlobegridtree(12, 2, 4)
+	ggt := NewGlobegridtree(12, 2, 4, 2.0)
 
 	tiles := ggt.FindRange(me, 50000)
 

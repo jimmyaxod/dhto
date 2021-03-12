@@ -17,9 +17,11 @@ func TestCanIndexAndLookup(t *testing.T) {
 
 	dht := dht.NewDHTSimple()
 	opts := index_geospatial.IndexGeospatialOptions{
-		Num_grids:      6,
-		First_grid_lat: 1024,
-		First_grid_lon: 2048,
+		Num_grids:       10,
+		First_grid_lat:  128,
+		First_grid_lon:  256,
+		Grid_multiplier: 2,
+		Lookup_strategy: index_geospatial.Lookup_strat_tiles_closest_range,
 	}
 	igeo := index_geospatial.NewIndexGeospatial(dht, opts)
 
@@ -74,9 +76,10 @@ func TestCanIndexAndLookupPerformance(t *testing.T) {
 
 	dht := dht.NewDHTSimple()
 	opts := index_geospatial.IndexGeospatialOptions{
-		Num_grids:      6,
-		First_grid_lat: 1024,
-		First_grid_lon: 2048,
+		Num_grids:       6,
+		First_grid_lat:  1024,
+		First_grid_lon:  2048,
+		Grid_multiplier: 2,
 	}
 	igeo := index_geospatial.NewIndexGeospatial(dht, opts)
 
